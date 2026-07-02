@@ -3,3 +3,7 @@ export type Item = {
   name: string;
   image: string;
 };
+
+export type GuessRoutes = "herbs" | "seeds";
+
+export type GuessState = "unanswered" | "correct" | "incorrect";

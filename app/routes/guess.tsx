@@ -23,7 +23,7 @@ export default function Guess({ loaderData }: Route.ComponentProps) {
   const { options } = loaderData;
 
   return (
-    <main>
+    <main className="flex min-h-screen flex-col p-8 gap-8 items-center justify-center bg-gray-900 text-white">
       <GuessComponent item={options} />
     </main>
   );
