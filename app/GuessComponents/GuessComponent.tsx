@@ -13,7 +13,7 @@ export default function GuessComponent({ item }: { item: Item[] }) {
 
         <div className="grid grid-cols-5 gap-4">
             {item.map((item) => (
-                <GuessImageCard key={item.id} item={item} />
+                <GuessImageCard key={item.id} item={item} guessState="unanswered" />
             ))}
         </div>
     </section>
