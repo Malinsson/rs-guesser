@@ -1,5 +1,5 @@
 import type { Route } from "./+types/guess";
-import GuessComponent from "~/GuessComponents/GuessComponent";
+import GuessComponent from "~/Components/GuessComponents/GuessComponent";
 import { getGuessOptions } from "~/data/data";
 
 export function meta({}: Route.MetaArgs) {
