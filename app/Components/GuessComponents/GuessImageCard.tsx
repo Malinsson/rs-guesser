@@ -1,25 +1,27 @@
 import type { Item, GuessState } from "~/types/index";
 import { checkGuessState } from "~/lib/helperFunctions";
-import { useCallback, useState } from "react";
 
-export default function GuessImageCard(
-    { item, guessState }: { item: Item; guessState: GuessState }
-) {
-    const [isImageLoaded, setIsImageLoaded] = useState(false);
+type GuessImageCardProps = {
+    item: Item;
+    guessState: GuessState;
+    onDrop: (item: Item) => void;
+};
 
-    const handleImageLoad = useCallback(() => {
-        setIsImageLoaded(true);
-    }, []);
-
-
+export default function GuessImageCard({ item, guessState, onDrop }: GuessImageCardProps) {
     return (
-        <div className={`flex flex-col items-center justify-center gap-2 rounded-lg ${checkGuessState(guessState)} p-4 shadow-md pointer-events-none`}>
+        <div
+            className={`flex min-h-40 flex-col items-center justify-center gap-2 rounded-lg border border-white/10 ${checkGuessState(guessState)} p-4 shadow-md transition-colors duration-300`}
+            onDragOver={(event) => event.preventDefault()}
+            onDrop={(event) => {
+                event.preventDefault();
+                onDrop(item);
+            }}
+        >
             <img
                 src={item.image}
-                onLoad={handleImageLoad}
-                className="h-18 z-20 w-auto rounded-lg object-contain draggable-none select-none pointer-events-none"
+                className="h-18 z-20 w-auto rounded-lg object-contain select-none pointer-events-none"
             />
-            <div className="bg-gray-500 w-full rounded-md p-2 text-center h-8 mt-4">
+            <div className="mt-4 h-8 w-full rounded-md bg-gray-500 p-2 text-center">
 
             </div>
         </div>

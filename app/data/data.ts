@@ -1,6 +1,6 @@
-import type { Item } from "~/types/index";
+import type { GuessRoutes, Item } from "~/types/index";
 
-export const guessOptions: { [key: string]: Item[] } = {
+export const guessOptions: Record<GuessRoutes, Item[]> = {
   herbs: [
     { id: 1, name: "Guam Leaf", image: "/images/herbs/Guam_leaf.webp" },
     { id: 2, name: "Marrentill", image: "/images/herbs/Marrentill.webp" },
@@ -34,9 +34,13 @@ seeds:  [
     { id: 13, name: "Dwarf Weed", image: "/images/seeds/Dwarf_weed_seed_5.png" },
     { id: 14, name: "Torstol", image: "/images/seeds/Torstol_seed_5.png" },
     { id: 15, name: "Huasca", image: "/images/seeds/Huasca_seed_5.webp" },
-]
+],
 };
 
-export function getGuessOptions(type: string): Item[] {
+export function getGuessOptions(type: GuessRoutes | undefined): Item[] {
+  if (!type) {
+    return [];
+  }
+
   return guessOptions[type] || [];
-};
+}

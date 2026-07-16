@@ -1,6 +1,7 @@
 import type { Route } from "./+types/guess";
 import GuessComponent from "~/Components/GuessComponents/GuessComponent";
 import { getGuessOptions } from "~/data/data";
+import type { GuessRoutes } from "~/types/index";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -10,7 +11,7 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const options = getGuessOptions(params.type);
+  const options = getGuessOptions(params.type as GuessRoutes | undefined);
 
   if (!options.length) {
     throw new Response("Guess option not found", { status: 404 });
@@ -24,7 +25,7 @@ export default function Guess({ loaderData }: Route.ComponentProps) {
 
   return (
     <main className="flex min-h-screen flex-col p-8 gap-8 items-center justify-center bg-gray-900 text-white">
-      <GuessComponent item={options} />
+      <GuessComponent items={options} />
     </main>
   );
 }
