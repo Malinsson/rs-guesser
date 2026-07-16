@@ -4,7 +4,7 @@ import { getGuessOptions } from "~/data/data";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Guess the items" },
+    { title: "Guess the objects" },
     { name: "description", content: "Try to guess the items!" },
   ];
 }
