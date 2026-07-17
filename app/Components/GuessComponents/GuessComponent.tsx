@@ -25,12 +25,27 @@ export default function GuessComponent({ items }: { items: Item[] }) {
     const [nameCards, setNameCards] = useState<Item[]>(() => shuffleItems(items));
     const [imageCards, setImageCards] = useState<Item[]>(() => shuffleItems(items));
     const [guessStates, setGuessStates] = useState<Record<number, "unanswered" | "correct" | "incorrect">>(() => createGuessStates(items));
+    const [guessedNamesByImageId, setGuessedNamesByImageId] = useState<Record<number, Item | null>>(
+        () =>
+            items.reduce<Record<number, Item | null>>((states, item) => {
+                states[item.id] = null;
+                return states;
+            }, {}),
+    );
+    const [usedNameIds, setUsedNameIds] = useState<number[]>([]);
     const [draggedItemId, setDraggedItemId] = useState<number | null>(null);
 
     useEffect(() => {
         setNameCards(shuffleItems(items));
         setImageCards(shuffleItems(items));
         setGuessStates(createGuessStates(items));
+        setGuessedNamesByImageId(
+            items.reduce<Record<number, Item | null>>((states, item) => {
+                states[item.id] = null;
+                return states;
+            }, {}),
+        );
+        setUsedNameIds([]);
         setDraggedItemId(null);
     }, [items]);
 
@@ -43,18 +58,37 @@ export default function GuessComponent({ items }: { items: Item[] }) {
             return;
         }
 
-        const isCorrect = draggedItemId === targetItem.id;
+        const draggedItem = nameCards.find((item) => item.id === draggedItemId);
+
+        if (!draggedItem || guessStates[targetItem.id] !== "unanswered") {
+            setDraggedItemId(null);
+            return;
+        }
+
+        const isCorrect = draggedItem.id === targetItem.id;
 
         setGuessStates((currentStates) => ({
             ...currentStates,
             [targetItem.id]: isCorrect ? "correct" : "incorrect",
         }));
 
+        setGuessedNamesByImageId((currentGuesses) => ({
+            ...currentGuesses,
+            [targetItem.id]: draggedItem,
+        }));
+
+        setUsedNameIds((currentUsedIds) =>
+            currentUsedIds.includes(draggedItem.id)
+                ? currentUsedIds
+                : [...currentUsedIds, draggedItem.id],
+        );
+
         setDraggedItemId(null);
     };
 
     const correctMatches = Object.values(guessStates).filter((guessState) => guessState === "correct").length;
     const allMatched = correctMatches === items.length && items.length > 0;
+    const remainingNames = nameCards.filter((item) => !usedNameIds.includes(item.id));
 
     return (
         <section className="w-full max-w-6xl">
@@ -65,23 +99,23 @@ export default function GuessComponent({ items }: { items: Item[] }) {
                 </p>
             </div>
 
-            <div className="mb-8 grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-                {nameCards.map((item) => (
+            <div className="mb-8 grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+                {remainingNames.map((item) => (
                     <GuessNameCard
                         key={item.id}
                         item={item}
-                        isMatched={guessStates[item.id] === "correct"}
                         onDragStart={handleDragStart}
                     />
                 ))}
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+            <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
                 {imageCards.map((item) => (
                     <GuessImageCard
                         key={item.id}
                         item={item}
                         guessState={guessStates[item.id]}
+                        guessedItem={guessedNamesByImageId[item.id]}
                         onDrop={handleDrop}
                     />
                 ))}
