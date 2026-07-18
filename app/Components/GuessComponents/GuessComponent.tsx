@@ -3,15 +3,29 @@ import type { Item } from "~/types/index";
 import GuessImageCard from "./GuessImageCard";
 import GuessNameCard from "./GuessNameCard";
 
-function shuffleItems(items: Item[]): Item[] {
-    const shuffledItems = [...items];
+function hashString(value: string): number {
+    let hash = 0;
 
-    for (let index = shuffledItems.length - 1; index > 0; index -= 1) {
-        const swapIndex = Math.floor(Math.random() * (index + 1));
-        [shuffledItems[index], shuffledItems[swapIndex]] = [shuffledItems[swapIndex], shuffledItems[index]];
+    for (let index = 0; index < value.length; index += 1) {
+        hash = (hash * 31 + value.charCodeAt(index)) >>> 0;
     }
 
-    return shuffledItems;
+    return hash;
+}
+
+function shuffleItems(items: Item[], salt: string): Item[] {
+    const shuffledItems = [...items];
+
+    return shuffledItems.sort((firstItem, secondItem) => {
+        const firstHash = hashString(`${salt}-${firstItem.id}-${firstItem.name}-${firstItem.image}`);
+        const secondHash = hashString(`${salt}-${secondItem.id}-${secondItem.name}-${secondItem.image}`);
+
+        if (firstHash === secondHash) {
+            return firstItem.id - secondItem.id;
+        }
+
+        return firstHash - secondHash;
+    });
 }
 
 function createGuessStates(items: Item[]) {
@@ -22,8 +36,8 @@ function createGuessStates(items: Item[]) {
 }
 
 export default function GuessComponent({ items }: { items: Item[] }) {
-    const [nameCards, setNameCards] = useState<Item[]>(() => shuffleItems(items));
-    const [imageCards, setImageCards] = useState<Item[]>(() => shuffleItems(items));
+    const [nameCards, setNameCards] = useState<Item[]>(() => shuffleItems(items, "names"));
+    const [imageCards, setImageCards] = useState<Item[]>(() => shuffleItems(items, "images"));
     const [guessStates, setGuessStates] = useState<Record<number, "unanswered" | "correct" | "incorrect">>(() => createGuessStates(items));
     const [guessedNamesByImageId, setGuessedNamesByImageId] = useState<Record<number, Item | null>>(
         () =>
@@ -36,8 +50,8 @@ export default function GuessComponent({ items }: { items: Item[] }) {
     const [draggedItemId, setDraggedItemId] = useState<number | null>(null);
 
     useEffect(() => {
-        setNameCards(shuffleItems(items));
-        setImageCards(shuffleItems(items));
+        setNameCards(shuffleItems(items, "names"));
+        setImageCards(shuffleItems(items, "images"));
         setGuessStates(createGuessStates(items));
         setGuessedNamesByImageId(
             items.reduce<Record<number, Item | null>>((states, item) => {
