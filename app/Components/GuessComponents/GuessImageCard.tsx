@@ -24,7 +24,7 @@ export default function GuessImageCard({ item, guessState, guessedItem, onDrop, 
                 src={item.image}
                 className="h-18 z-20 w-auto rounded-lg object-contain select-none pointer-events-none"
             />
-            <div className="mt-4 mb-2 h-9 flex w-full flex-col items-center align-middle rounded-md bg-gray-500 p-1 text-center">
+            <div className="mt-4 h-9 flex w-full flex-col items-center align-middle rounded-md bg-gray-500 p-1 text-center">
                 <p className="text-lg align-text-center text-center text-white">{guessedItem ? guessedItem.name : ""}</p>
             </div>
         </div>

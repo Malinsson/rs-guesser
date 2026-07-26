@@ -107,6 +107,10 @@ export default function GuessComponent({ items }: { items: Item[] }) {
     };
 
     const handleNameSelect = (item: Item) => {
+        if (selectedItemId === item.id) {
+            setSelectedItemId(null);
+            return;
+        }
         setSelectedItemId(item.id);
     };
 
