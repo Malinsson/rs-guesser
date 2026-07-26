@@ -48,6 +48,7 @@ export default function GuessComponent({ items }: { items: Item[] }) {
     );
     const [usedNameIds, setUsedNameIds] = useState<number[]>([]);
     const [draggedItemId, setDraggedItemId] = useState<number | null>(null);
+    const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
 
     useEffect(() => {
         setNameCards(shuffleItems(items, "names"));
@@ -61,21 +62,21 @@ export default function GuessComponent({ items }: { items: Item[] }) {
         );
         setUsedNameIds([]);
         setDraggedItemId(null);
+        setSelectedItemId(null);
     }, [items]);
 
     const handleDragStart = (item: Item) => {
         setDraggedItemId(item.id);
     };
 
-    const handleDrop = (targetItem: Item) => {
-        if (draggedItemId === null) {
+    const handleAttemptGuess = (targetItem: Item, sourceItemId: number | null) => {
+        if (sourceItemId === null) {
             return;
         }
 
-        const draggedItem = nameCards.find((item) => item.id === draggedItemId);
+        const draggedItem = nameCards.find((item) => item.id === sourceItemId);
 
         if (!draggedItem || guessStates[targetItem.id] !== "unanswered") {
-            setDraggedItemId(null);
             return;
         }
 
@@ -98,6 +99,19 @@ export default function GuessComponent({ items }: { items: Item[] }) {
         );
 
         setDraggedItemId(null);
+        setSelectedItemId(null);
+    };
+
+    const handleDrop = (targetItem: Item) => {
+        handleAttemptGuess(targetItem, draggedItemId);
+    };
+
+    const handleNameSelect = (item: Item) => {
+        setSelectedItemId(item.id);
+    };
+
+    const handleImageSelect = (targetItem: Item) => {
+        handleAttemptGuess(targetItem, selectedItemId);
     };
 
     const correctMatches = Object.values(guessStates).filter((guessState) => guessState === "correct").length;
@@ -113,12 +127,20 @@ export default function GuessComponent({ items }: { items: Item[] }) {
                 </p>
             </div>
 
+            {selectedItemId !== null && (
+                <div className="mb-4 rounded-2xl bg-white/10 px-4 py-3 text-sm text-white/80">
+                    Tap an image to place: {nameCards.find((item) => item.id === selectedItemId)?.name}
+                </div>
+            )}
+
             <div className="mb-8 grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
                 {remainingNames.map((item) => (
                     <GuessNameCard
                         key={item.id}
                         item={item}
                         onDragStart={handleDragStart}
+                        onSelect={handleNameSelect}
+                        isSelected={selectedItemId === item.id}
                     />
                 ))}
             </div>
@@ -131,6 +153,7 @@ export default function GuessComponent({ items }: { items: Item[] }) {
                         guessState={guessStates[item.id]}
                         guessedItem={guessedNamesByImageId[item.id]}
                         onDrop={handleDrop}
+                        onSelect={handleImageSelect}
                     />
                 ))}
             </div>
