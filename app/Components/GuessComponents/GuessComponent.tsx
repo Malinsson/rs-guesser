@@ -48,6 +48,7 @@ export default function GuessComponent({ items }: { items: Item[] }) {
     );
     const [usedNameIds, setUsedNameIds] = useState<number[]>([]);
     const [draggedItemId, setDraggedItemId] = useState<number | null>(null);
+    const [hoveredImageId, setHoveredImageId] = useState<number | null>(null);
     const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
 
     useEffect(() => {
@@ -62,11 +63,19 @@ export default function GuessComponent({ items }: { items: Item[] }) {
         );
         setUsedNameIds([]);
         setDraggedItemId(null);
+        setHoveredImageId(null);
         setSelectedItemId(null);
     }, [items]);
 
     const handleDragStart = (item: Item) => {
+        setSelectedItemId(null);
         setDraggedItemId(item.id);
+        setHoveredImageId(null);
+    };
+
+    const handleDragEnd = () => {
+        setDraggedItemId(null);
+        setHoveredImageId(null);
     };
 
     const handleAttemptGuess = (targetItem: Item, sourceItemId: number | null) => {
@@ -99,11 +108,24 @@ export default function GuessComponent({ items }: { items: Item[] }) {
         );
 
         setDraggedItemId(null);
+        setHoveredImageId(null);
         setSelectedItemId(null);
     };
 
     const handleDrop = (targetItem: Item) => {
         handleAttemptGuess(targetItem, draggedItemId);
+    };
+
+    const handleDragOverImage = (targetItem: Item) => {
+        if (draggedItemId !== null) {
+            setHoveredImageId(targetItem.id);
+        }
+    };
+
+    const handleDragLeaveImage = (targetItem: Item) => {
+        if (hoveredImageId === targetItem.id) {
+            setHoveredImageId(null);
+        }
     };
 
     const handleNameSelect = (item: Item) => {
@@ -131,11 +153,6 @@ export default function GuessComponent({ items }: { items: Item[] }) {
                 </p>
             </div>
 
-            {selectedItemId !== null && (
-                <div className="mb-4 rounded-2xl bg-white/10 px-4 py-3 text-sm text-white/80">
-                    Tap an image to place: {nameCards.find((item) => item.id === selectedItemId)?.name}
-                </div>
-            )}
 
             <div className="mb-8 grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
                 {remainingNames.map((item) => (
@@ -143,6 +160,7 @@ export default function GuessComponent({ items }: { items: Item[] }) {
                         key={item.id}
                         item={item}
                         onDragStart={handleDragStart}
+                        onDragEnd={handleDragEnd}
                         onSelect={handleNameSelect}
                         isSelected={selectedItemId === item.id}
                     />
@@ -156,7 +174,10 @@ export default function GuessComponent({ items }: { items: Item[] }) {
                         item={item}
                         guessState={guessStates[item.id]}
                         guessedItem={guessedNamesByImageId[item.id]}
+                        isDraggedOver={hoveredImageId === item.id}
                         onDrop={handleDrop}
+                        onDragOverImage={handleDragOverImage}
+                        onDragLeaveImage={handleDragLeaveImage}
                         onSelect={handleImageSelect}
                     />
                 ))}

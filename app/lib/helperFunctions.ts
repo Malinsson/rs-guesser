@@ -3,7 +3,7 @@ import type { GuessState } from "~/types/index";
 export function checkGuessState(guessState: GuessState): string {
   switch (guessState) {
     case "unanswered":
-      return "bg-gray-800";
+      return "bg-gray-800 cursor-pointer";
     case "correct":
       return "bg-green-500";
     case "incorrect":

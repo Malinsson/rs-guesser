@@ -5,15 +5,31 @@ type GuessImageCardProps = {
     item: Item;
     guessState: GuessState;
     guessedItem: Item | null;
+    isDraggedOver: boolean;
     onDrop: (item: Item) => void;
+    onDragOverImage: (item: Item) => void;
+    onDragLeaveImage: (item: Item) => void;
     onSelect: (item: Item) => void;
 };
 
-export default function GuessImageCard({ item, guessState, guessedItem, onDrop, onSelect }: GuessImageCardProps) {
+export default function GuessImageCard({
+    item,
+    guessState,
+    guessedItem,
+    isDraggedOver,
+    onDrop,
+    onDragOverImage,
+    onDragLeaveImage,
+    onSelect,
+}: GuessImageCardProps) {
     return (
         <div
-            className={`flex min-h-40 flex-col items-center justify-center gap-2 rounded-lg border border-white/10 ${checkGuessState(guessState)} p-4 shadow-md transition-colors duration-300`}
-            onDragOver={(event) => event.preventDefault()}
+            className={`flex min-h-40 flex-col items-center justify-center gap-2 rounded-lg border p-4 shadow-md transition-all duration-300 ${checkGuessState(guessState)} ${isDraggedOver ? "scale-[1.02] ring-2 ring-white/80 ring-offset-4 ring-offset-gray-900" : "border-white/10"}`}
+            onDragOver={(event) => {
+                event.preventDefault();
+                onDragOverImage(item);
+            }}
+            onDragLeave={() => onDragLeaveImage(item)}
             onDrop={(event) => {
                 event.preventDefault();
                 onDrop(item);
