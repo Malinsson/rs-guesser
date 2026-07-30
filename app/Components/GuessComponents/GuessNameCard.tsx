@@ -20,7 +20,7 @@ export default function GuessNameCard({ item, onDragStart, onDragEnd, onSelect, 
             onDragEnd={onDragEnd}
             onClick={() => onSelect(item)}
         >
-            <p className="text-md md:text-lg font-semibold text-white">{item.name}</p>
+            <p className="text-md md:text-lg text-white">{item.name}</p>
         </div>
     );
 }

@@ -2,14 +2,14 @@ import type { Item, GuessState } from "~/types/index";
 import { checkGuessState } from "~/lib/helperFunctions";
 
 type GuessImageCardProps = {
-    item: Item;
+    item: Pick<Item, "id" | "image">;
     guessState: GuessState;
     guessedItem: Item | null;
     isDraggedOver: boolean;
-    onDrop: (item: Item) => void;
-    onDragOverImage: (item: Item) => void;
-    onDragLeaveImage: (item: Item) => void;
-    onSelect: (item: Item) => void;
+    onDrop: (item: Pick<Item, "id" | "image">) => void;
+    onDragOverImage: (item: Pick<Item, "id" | "image">) => void;
+    onDragLeaveImage: (item: Pick<Item, "id" | "image">) => void;
+    onSelect: (item: Pick<Item, "id" | "image">) => void;
 };
 
 export default function GuessImageCard({

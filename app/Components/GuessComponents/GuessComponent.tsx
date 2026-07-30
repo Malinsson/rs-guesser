@@ -3,30 +3,7 @@ import type { Item } from "~/types/index";
 import GuessImageCard from "./GuessImageCard";
 import GuessNameCard from "./GuessNameCard";
 
-function hashString(value: string): number {
-    let hash = 0;
-
-    for (let index = 0; index < value.length; index += 1) {
-        hash = (hash * 31 + value.charCodeAt(index)) >>> 0;
-    }
-
-    return hash;
-}
-
-function shuffleItems(items: Item[], salt: string): Item[] {
-    const shuffledItems = [...items];
-
-    return shuffledItems.sort((firstItem, secondItem) => {
-        const firstHash = hashString(`${salt}-${firstItem.id}-${firstItem.name}-${firstItem.image}`);
-        const secondHash = hashString(`${salt}-${secondItem.id}-${secondItem.name}-${secondItem.image}`);
-
-        if (firstHash === secondHash) {
-            return firstItem.id - secondItem.id;
-        }
-
-        return firstHash - secondHash;
-    });
-}
+type ImageItem = Pick<Item, "id" | "image">;
 
 function createGuessStates(items: Item[]) {
     return items.reduce<Record<number, "unanswered" | "correct" | "incorrect">>((states, item) => {
@@ -35,13 +12,19 @@ function createGuessStates(items: Item[]) {
     }, {});
 }
 
-export default function GuessComponent({ items }: { items: Item[] }) {
-    const [nameCards, setNameCards] = useState<Item[]>(() => shuffleItems(items, "names"));
-    const [imageCards, setImageCards] = useState<Item[]>(() => shuffleItems(items, "images"));
-    const [guessStates, setGuessStates] = useState<Record<number, "unanswered" | "correct" | "incorrect">>(() => createGuessStates(items));
+export default function GuessComponent({
+    nameItems,
+    imageItems,
+}: {
+    nameItems: Item[];
+    imageItems: ImageItem[];
+}) {
+    const [nameCards, setNameCards] = useState<Item[]>(() => nameItems);
+    const [imageCards, setImageCards] = useState<ImageItem[]>(() => imageItems);
+    const [guessStates, setGuessStates] = useState<Record<number, "unanswered" | "correct" | "incorrect">>(() => createGuessStates(nameItems));
     const [guessedNamesByImageId, setGuessedNamesByImageId] = useState<Record<number, Item | null>>(
         () =>
-            items.reduce<Record<number, Item | null>>((states, item) => {
+            nameItems.reduce<Record<number, Item | null>>((states, item) => {
                 states[item.id] = null;
                 return states;
             }, {}),
@@ -52,11 +35,11 @@ export default function GuessComponent({ items }: { items: Item[] }) {
     const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
 
     useEffect(() => {
-        setNameCards(shuffleItems(items, "names"));
-        setImageCards(shuffleItems(items, "images"));
-        setGuessStates(createGuessStates(items));
+        setNameCards(nameItems);
+        setImageCards(imageItems);
+        setGuessStates(createGuessStates(nameItems));
         setGuessedNamesByImageId(
-            items.reduce<Record<number, Item | null>>((states, item) => {
+            nameItems.reduce<Record<number, Item | null>>((states, item) => {
                 states[item.id] = null;
                 return states;
             }, {}),
@@ -65,7 +48,7 @@ export default function GuessComponent({ items }: { items: Item[] }) {
         setDraggedItemId(null);
         setHoveredImageId(null);
         setSelectedItemId(null);
-    }, [items]);
+    }, [nameItems, imageItems]);
 
     const handleDragStart = (item: Item) => {
         setSelectedItemId(null);
@@ -78,7 +61,7 @@ export default function GuessComponent({ items }: { items: Item[] }) {
         setHoveredImageId(null);
     };
 
-    const handleAttemptGuess = (targetItem: Item, sourceItemId: number | null) => {
+    const handleAttemptGuess = (targetItem: ImageItem, sourceItemId: number | null) => {
         if (sourceItemId === null) {
             return;
         }
@@ -112,17 +95,17 @@ export default function GuessComponent({ items }: { items: Item[] }) {
         setSelectedItemId(null);
     };
 
-    const handleDrop = (targetItem: Item) => {
+    const handleDrop = (targetItem: ImageItem) => {
         handleAttemptGuess(targetItem, draggedItemId);
     };
 
-    const handleDragOverImage = (targetItem: Item) => {
+    const handleDragOverImage = (targetItem: ImageItem) => {
         if (draggedItemId !== null) {
             setHoveredImageId(targetItem.id);
         }
     };
 
-    const handleDragLeaveImage = (targetItem: Item) => {
+    const handleDragLeaveImage = (targetItem: ImageItem) => {
         if (hoveredImageId === targetItem.id) {
             setHoveredImageId(null);
         }
@@ -136,20 +119,20 @@ export default function GuessComponent({ items }: { items: Item[] }) {
         setSelectedItemId(item.id);
     };
 
-    const handleImageSelect = (targetItem: Item) => {
+    const handleImageSelect = (targetItem: ImageItem) => {
         handleAttemptGuess(targetItem, selectedItemId);
     };
 
     const correctMatches = Object.values(guessStates).filter((guessState) => guessState === "correct").length;
-    const allMatched = correctMatches === items.length && items.length > 0;
+    const allMatched = correctMatches === nameItems.length && nameItems.length > 0;
     const remainingNames = nameCards.filter((item) => !usedNameIds.includes(item.id));
 
     return (
         <section className="w-full max-w-6xl">
-            <div className="mb-8 flex items-center justify-between gap-4 rounded-2xl bg-white/5 px-6 py-4 text-sm text-white/80">
-                <p>Drag each name onto the matching image.</p>
+            <div className="mb-8 flex items-center justify-between gap-4 rounded-2xl bg-white/5 px-6 py-4 text-sm text-white/80 md:text-lg">
+                <p>Click or drag each name onto the image you think is correct.</p>
                 <p>
-                    Score {correctMatches}/{items.length}
+                    Score {correctMatches}/{nameItems.length}
                 </p>
             </div>
 
