@@ -1,6 +1,7 @@
 import type { Route } from "./+types/guess";
 import GuessComponent from "~/Components/GuessComponents/GuessComponent";
 import { getGuessOptions } from "~/data/data";
+import { getImageDataUrl } from "~/lib/imageManifest.server";
 import type { GuessRoutes } from "~/types/index";
 
 function shuffleItems<T>(items: T[]): T[] {
@@ -30,7 +31,15 @@ export async function loader({ params }: Route.LoaderArgs) {
 
   return {
     nameOptions: shuffleItems(options),
-    imageOptions: shuffleItems(options).map(({ id, image }) => ({ id, image })),
+    imageOptions: await Promise.all(
+      shuffleItems(options).map(async ({ id, image }) => ({
+        id,
+        image: {
+          id: image.id,
+          src: (await getImageDataUrl(image.id)) ?? undefined,
+        },
+      })),
+    ),
   };
 }
 
