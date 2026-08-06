@@ -128,7 +128,7 @@ export default function GuessComponent({
     const remainingNames = nameCards.filter((item) => !usedNameIds.includes(item.id));
 
     return (
-        <section className="w-full max-w-6xl p-4 md:p-8 bg-[url(/images/styling/backdrop_745.gif)] bg-center bg-contain bg-repeat-y">
+        <section className="w-full max-w-6xl p-4 md:p-8">
             <div className="mb-8 flex items-center justify-between gap-4 rounded-2xl bg-white/5 px-6 py-4 text-sm text-white/80 md:text-lg">
                 <p>Click or drag each name onto the image you think is correct.</p>
                 <p>

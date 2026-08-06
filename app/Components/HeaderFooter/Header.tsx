@@ -1,6 +1,6 @@
 export default function Header() {
   return (
-    <header className="p-4 bg-darkbeige">
+    <header className="z-20 p-4 bg-darkbeige">
       <h1 className="text-5xl text-center">RS Guesser</h1>
       <div className="flex flex-col items-center justify-center">
         <nav className="flex justify-center gap-4 mt-2">

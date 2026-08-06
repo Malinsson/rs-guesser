@@ -3,6 +3,7 @@ import type { GuessRoutes } from "~/types/index";
 import GuessComponent from "~/Components/GuessComponents/GuessComponent";
 import { getGuessOptions } from "~/data/data";
 import { getImageDataUrl } from "~/lib/imageManifest.server";
+import ScrollBackdrop from "~/Components/shared/ScrollBackdrop";
 
 function shuffleItems<T>(items: T[]): T[] {
   const shuffledItems = [...items];
@@ -47,12 +48,10 @@ export default function Guess({ loaderData }: Route.ComponentProps) {
   const { nameOptions, imageOptions } = loaderData;
 
   return (
-    <main className="flex min-h-screen flex-col p-8 gap-8 items-center justify-center bg-lightbeige dark:bg-darkbeige md:mx-16">
-      <div className="w-full">
-        <img src="/images/styling/backdrop_765_top.gif" alt="Background banner top" className="w-full h-auto" />
-        <GuessComponent nameItems={nameOptions} imageItems={imageOptions} />
-        <img src="/images/styling/backdrop_765_bottom.gif" alt="Background banner bottom" className="w-full h-auto" />
-      </div>
+    <main className="flex min-h-screen flex-col px-6 py-12 gap-8 items-center justify-center bg-lightbeige dark:bg-darkbeige md:mx-16">
+        <ScrollBackdrop>
+          <GuessComponent nameItems={nameOptions} imageItems={imageOptions} />
+        </ScrollBackdrop>
     </main>
   );
 }
