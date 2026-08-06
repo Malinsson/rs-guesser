@@ -20,6 +20,7 @@
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --color-lightbeige: #E2DBC8;
   --color-darkbeige: #C0A886;
+  --shadow-button: 0px 0px 25px rgba(0, 0, 0, 0.6);
 }
 
 html,

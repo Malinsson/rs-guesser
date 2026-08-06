@@ -10,17 +10,13 @@ type GuessNameCardProps = {
 
 export default function GuessNameCard({ item, onDragStart, onDragEnd, onSelect, isSelected }: GuessNameCardProps) {
 
-    
-
     return (
-        <div
-            className={`flex cursor-grab items-center justify-center gap-2 rounded-lg p-2 md:p-4 shadow-md transition-colors duration-300 hover:bg-gray-700 ${isSelected ? "bg-gray-600 ring ring-white" : "bg-gray-800"}`}
+        <button className={`h-auto cursor-event-auto cursor-grab p-2 md:p-4 text-md md:text-lg text-white bg-[url(/images/styling/button.png)] bg-no-repeat bg-contain bg-center transition-shadow duration-300 hover:shadow-button hover:inset-ring-2 hover:inset-ring-lightbeige ${isSelected ? "ring ring-white shadow-button" : ""}`}
             draggable
             onDragStart={() => onDragStart(item)}
             onDragEnd={onDragEnd}
             onClick={() => onSelect(item)}
-        >
-            <p className="text-md md:text-lg text-white">{item.name}</p>
-        </div>
+            >{item.name}
+        </button>
     );
 }
