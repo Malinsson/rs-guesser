@@ -3,12 +3,12 @@ import type { GuessState } from "~/types/index";
 export function checkGuessState(guessState: GuessState): string {
   switch (guessState) {
     case "unanswered":
-      return "bg-gray-800 cursor-pointer";
+      return "bg-darkbeige";
     case "correct":
-      return "bg-green-500";
+      return "bg-green-600";
     case "incorrect":
-      return "bg-red-500";
+      return "bg-red-600";
     default:
-      return "bg-gray-800";
+      return "bg-darkbeige";
   }
 };
