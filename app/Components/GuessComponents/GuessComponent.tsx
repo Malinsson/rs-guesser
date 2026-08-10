@@ -137,7 +137,7 @@ export default function GuessComponent({
             </div>
 
 
-            <div className="mb-8 grid gap-4 grid-cols-2 md:grid-cols-3 xl:grid-cols-5">
+            <div className="mb-8 grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                 {remainingNames.map((item) => (
                     <GuessNameCard
                         key={item.id}
@@ -150,7 +150,7 @@ export default function GuessComponent({
                 ))}
             </div>
 
-            <div className="grid gap-4 grid-cols-2 md:grid-cols-3 xl:grid-cols-5">
+            <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                 {imageCards.map((item) => (
                     <GuessImageCard
                         key={item.id}
