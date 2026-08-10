@@ -1,3 +1,5 @@
+import { forwardRef } from "react";
+import type { ForwardedRef } from "react";
 import type { Item, GuessState } from "~/types/index";
 import { checkGuessState } from "~/lib/helperFunctions";
 
@@ -12,18 +14,22 @@ type GuessImageCardProps = {
     onSelect: (item: Pick<Item, "id" | "image">) => void;
 };
 
-export default function GuessImageCard({
-    item,
-    guessState,
-    guessedItem,
-    isDraggedOver,
-    onDrop,
-    onDragOverImage,
-    onDragLeaveImage,
-    onSelect,
-}: GuessImageCardProps) {
+const GuessImageCard = forwardRef<HTMLDivElement, GuessImageCardProps>(function GuessImageCard(
+    {
+        item,
+        guessState,
+        guessedItem,
+        isDraggedOver,
+        onDrop,
+        onDragOverImage,
+        onDragLeaveImage,
+        onSelect,
+    },
+    ref: ForwardedRef<HTMLDivElement>,
+) {
     return (
         <div
+            ref={ref}
             className={`h-40 flex flex-col justify-center items-center ${isDraggedOver ? "scale-[1.02] ring-2 ring-white/80 ring-offset-4 ring-offset-gray-900" : "border-white/10"}`}
             onDragOver={(event) => {
                 event.preventDefault();
@@ -35,6 +41,12 @@ export default function GuessImageCard({
                 onDrop(item);
             }}
             onClick={() => onSelect(item)}
+            tabIndex={0}
+            onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                    onSelect(item);
+                }
+            }}
         >
             <div className="h-38 md:h-40 lg:h-46 w-full px-4 md:px-6 bg-[url(/images/styling/button_large.gif)] bg-size-[100%_100%] bg-no-repeat bg-center flex flex-col items-center justify-center">
                 <img
@@ -47,4 +59,6 @@ export default function GuessImageCard({
             </div>
         </div>
     );
-}
+});
+
+export default GuessImageCard;

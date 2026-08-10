@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Item } from "~/types/index";
 import GuessImageCard from "./GuessImageCard";
 import GuessNameCard from "./GuessNameCard";
@@ -19,6 +19,8 @@ export default function GuessComponent({
     nameItems: Item[];
     imageItems: ImageItem[];
 }) {
+    const nameCardRefs = useRef<Array<HTMLButtonElement | null>>([]);
+    const imageCardRefs = useRef<Array<HTMLDivElement | null>>([]);
     const [nameCards, setNameCards] = useState<Item[]>(() => nameItems);
     const [imageCards, setImageCards] = useState<ImageItem[]>(() => imageItems);
     const [guessStates, setGuessStates] = useState<Record<number, "unanswered" | "correct" | "incorrect">>(() => createGuessStates(nameItems));
@@ -48,6 +50,8 @@ export default function GuessComponent({
         setDraggedItemId(null);
         setHoveredImageId(null);
         setSelectedItemId(null);
+        nameCardRefs.current = [];
+        imageCardRefs.current = [];
     }, [nameItems, imageItems]);
 
     const handleDragStart = (item: Item) => {
@@ -116,11 +120,30 @@ export default function GuessComponent({
             setSelectedItemId(null);
             return;
         }
+
         setSelectedItemId(item.id);
+    };
+
+    const focusFirstImageCard = () => {
+        imageCardRefs.current[0]?.focus();
+    };
+
+    const focusFirstRemainingNameCard = () => {
+        nameCardRefs.current[0]?.focus();
+    };
+
+    const handleNameSelectFromKeyboard = (item: Item) => {
+        handleNameSelect(item);
+        requestAnimationFrame(() => {
+            focusFirstImageCard();
+        });
     };
 
     const handleImageSelect = (targetItem: ImageItem) => {
         handleAttemptGuess(targetItem, selectedItemId);
+        requestAnimationFrame(() => {
+            focusFirstRemainingNameCard();
+        });
     };
 
     const correctMatches = Object.values(guessStates).filter((guessState) => guessState === "correct").length;
@@ -136,24 +159,30 @@ export default function GuessComponent({
                 </p>
             </div>
 
-
             <div className="mb-8 grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-                {remainingNames.map((item) => (
+                {remainingNames.map((item, index) => (
                     <GuessNameCard
                         key={item.id}
+                        ref={(element) => {
+                            nameCardRefs.current[index] = element;
+                        }}
                         item={item}
                         onDragStart={handleDragStart}
                         onDragEnd={handleDragEnd}
                         onSelect={handleNameSelect}
+                        onKeyboardSelect={handleNameSelectFromKeyboard}
                         isSelected={selectedItemId === item.id}
                     />
                 ))}
             </div>
 
             <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-                {imageCards.map((item) => (
+                {imageCards.map((item, index) => (
                     <GuessImageCard
                         key={item.id}
+                        ref={(element) => {
+                            imageCardRefs.current[index] = element;
+                        }}
                         item={item}
                         guessState={guessStates[item.id]}
                         guessedItem={guessedNamesByImageId[item.id]}
