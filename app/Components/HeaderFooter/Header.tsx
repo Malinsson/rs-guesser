@@ -1,6 +1,9 @@
+import ScrollBanner from "~/Components/HeaderFooter/ScrollBanner";
+
 export default function Header() {
   return (
-    <header className="z-20 p-4 bg-darkbeige">
+    <header className="z-20 bg-darkbeige h-30">
+      <ScrollBanner>
       <h1 className="text-5xl text-center">RS Guesser</h1>
       <div className="flex flex-col items-center justify-center">
         <nav className="flex justify-center gap-4 mt-2">
@@ -15,6 +18,7 @@ export default function Header() {
           </a>
         </nav>
       </div>
+      </ScrollBanner>
     </header>
   );
 }

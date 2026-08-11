@@ -10,7 +10,7 @@ export function meta({}: Route.MetaArgs) {
 
 export default function Home() {
   return( 
-    <main className="bg-[url(/images/styling/bg2.jpg)] bg-repeat-y bg-contain p-6 md:p-16 flex min-h-screen flex-col items-center max-w-7xl mx-auto gap-8">
+    <main className="bg-[url(/images/styling/bg2.jpg)] bg-repeat-y bg-contain p-8 md:p-16 flex min-h-screen flex-col items-center max-w-7xl mx-auto gap-8">
       <section className="flex flex-col items-center justify-center gap-4">
         <h1 className="text-5xl md:text-7xl">RS-Guesser</h1>
         <p className="text-lg lg:text-2xl text-center max-w-5xl">
